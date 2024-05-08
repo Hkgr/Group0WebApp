@@ -72,12 +72,10 @@ namespace Group0WebApp.Controllers
             {
                 var userInDatabase = _context?.Users?.FirstOrDefault(u => u.Username == user.Username);
 
-                // Ensure that userInDatabase is not null
                 if (userInDatabase != null)
                 {
                     string folderPath = Path.Combine(_env.WebRootPath, "Uploads", $"{user.Username}.{userInDatabase.FullName}");
 
-                    // Store user information in cookies
                     Response.Cookies.Append("UserID", userInDatabase.UserID.ToString());
                     Response.Cookies.Append("Username", userInDatabase.Username);
                     Response.Cookies.Append("FullName", userInDatabase.FullName);

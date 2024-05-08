@@ -24,7 +24,6 @@ namespace Group_WebApp.Controllers
         {
             ViewData["Title"] = "MangmentFiles";
 
-            // استرداد البيانات المحملة لهذا المستخدم
             var uploadedFiles = GetUploadedFiles(userID);
 
             ViewData["Username"] = username;
@@ -47,18 +46,14 @@ namespace Group_WebApp.Controllers
 
                 foreach (var file in Request.Form.Files)
                 {
-                    // تحقق من عدم وجود الملف في قاعدة البيانات لنفس المستخدم
                     if (!IsFileAlreadyUploaded(userID, file.FileName))
                     {
-                        // نسخ الملف إلى المجلد المستهدف
                         string filePath = CopyFileToFolder(folderPath, file);
 
-                        // إضافة بيانات الملف إلى قاعدة البيانات
                         AddFileToDatabase(userID, file, filePath);
                     }
                     else
                     {
-                        // إذا تم العثور على الملف في قاعدة البيانات، عرض رسالة الخطأ
                         ViewData["ErrorMessage"] = $"File '{file.FileName}' already exists in the folder.";
                         ViewData["Username"] = username;
                         ViewData["FullName"] = fullname;
@@ -70,7 +65,6 @@ namespace Group_WebApp.Controllers
                     }
                 }
 
-                // حفظ التغييرات في قاعدة البيانات
                 _context?.SaveChanges();
 
                 return RedirectToAction("ManagementFiles", new { username, fullname, userID, folderPath });
@@ -82,14 +76,12 @@ namespace Group_WebApp.Controllers
             }
         }
 
-        // دالة للتحقق من وجود الملف في قاعدة البيانات لنفس المستخدم
         private bool IsFileAlreadyUploaded(int userID, string fileName)
         {
             return _context.Files.Any(f => f.UserID == userID && f.FileName == fileName);
         }
 
 
-        // دالة لنسخ الملفات إلى المجلد المطلوب
         private string CopyFileToFolder(string folderPath, Microsoft.AspNetCore.Http.IFormFile file)
         {
             string fileName = Path.GetFileName(file.FileName);
@@ -103,16 +95,13 @@ namespace Group_WebApp.Controllers
             return filePath;
         }
 
-        // دالة لإضافة بيانات الملفات إلى قاعدة البيانات
         private void AddFileToDatabase(int userID, Microsoft.AspNetCore.Http.IFormFile file, string filePath)
         {
-            // استخراج معلومات الملف
             string fileName = Path.GetFileName(file.FileName);
             string fileType = Path.GetExtension(fileName);
             long fileSize = file.Length;
             DateTime uploadDate = DateTime.Now;
 
-            // إنشاء سلسلة نصية تحوي بيانات الملف
             string fileInfoText = $"UserID: {userID}\n" +
                                   $"File Name: {fileName}\n" +
                                   $"File Type: {fileType}\n" +
@@ -120,12 +109,10 @@ namespace Group_WebApp.Controllers
                                   $"Upload Date: {uploadDate}\n" +
                                   $"File Path: {filePath}";
 
-            // تحديد مسار ملف النصي على سطح المكتب
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
             string logFileName = "UploadedFilesInfo.txt";
             string logFilePath = Path.Combine(uploadsFolder, logFileName);
 
-            // حفظ بيانات الملف في ملف نصي على سطح المكتب
             using (StreamWriter writer = new StreamWriter(logFilePath, true))
             {
                 writer.WriteLine("Uploaded File Info:");
@@ -133,7 +120,6 @@ namespace Group_WebApp.Controllers
                 writer.WriteLine("-------------------------------");
             }
 
-            // إضافة بيانات الملف إلى قاعدة البيانات
             var uploadedFile = new File
             {
                 UserID = userID,
@@ -148,10 +134,8 @@ namespace Group_WebApp.Controllers
         }
 
 
-        // دالة لاسترداد البيانات المحملة لهذا المستخدم
         private List<File> GetUploadedFiles(int userID)
         {
-            // جلب بيانات الملفات المحملة لهذا المستخدم
             var uploadedFiles = _context.Files?.Where(f => f.UserID == userID).ToList();
             return uploadedFiles;
         }
