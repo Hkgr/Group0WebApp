@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Management Files";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/FileStyle.css" asp-append-version="true" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h2>@ViewData["Title"] - UserID: @ViewData["UserID"], Username: @ViewData["Username"], Full Name: @ViewData["FullName"]</h2>
+
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
+        {
+            <p style="color: red;">@ViewData["ErrorMessage"]</p>
+        }
+
+        <form method="POST" enctype="multipart/form-data" id="uploadForm" action="@Url.Action("UploadFiles", "Files", new { folderPath = ViewData["FolderPath"] })">
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Select files to upload (Max total size: 200MB)</label>
+                <input class="form-control" type="file" id="fileInput" name="files[]" multiple>
+            </div>
+            <div class="input-box button">
+                <input type="submit" name="submit" value="Upload">
+            </div>
+        </form>
+
+
+        <div>
+            <!-- جدول لعرض بيانات الملفات المحملة -->
+            @if (ViewData["UploadedFiles"] != null && ((List<Group_WebApp.Models.File>)ViewData["UploadedFiles"]).Count > 0)
+            {
+                <h3>Uploaded Files:</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>File Type</th>
+                            <th>File Size</th>
+                            <th>Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var file in (List<Group_WebApp.Models.File>)ViewData["UploadedFiles"])
+                        {
+                            <tr>
+                                <td>@file.FileName</td>
+                                <td>@file.FileType</td>
+                                <td>@file.FileSize</td>
+                                <td>@file.UploadDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            var files = document.getElementById('fileInput').files;
+            var totalSize = 0;
+
+            for (var i = 0; i < files.length; i++) {
+                totalSize += files[i].size;
+            }
+
+            // Convert total size to MB
+            var totalSizeMB = totalSize / (1024 * 1024);
+
+            if (totalSizeMB > 200) {
+                alert('Total file size exceeds 200MB limit. Please select fewer files or smaller files.');
+                e.preventDefault(); // Prevent form submission
+            }
+        });
+    </script>
+</body>

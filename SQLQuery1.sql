@@ -1,0 +1,8 @@
+﻿SELECT TOP (1000) [FileID]
+      ,[UserID]
+      ,[FileName]
+      ,[FileType]
+      ,[FileSize]
+      ,[UploadDate]
+      ,[FilePath]
+  FROM [Group0wepApp_DB].[dbo].[Files]

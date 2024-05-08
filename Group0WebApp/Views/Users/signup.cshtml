@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
+    <title>Registration</title>
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Registration</h2>
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div class="error-message">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+        <form id="registrationForm" method="POST" action="/Users/AddUser">
+            <div class="input-box">
+                <input type="text" name="FullName" id="fullName" placeholder="Enter Your name" required>
+            </div>
+            <div class="input-box">
+                <input type="email" name="Email" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="input-box">
+                <input type="text" name="Username" id="username" placeholder="Enter User name" required>
+            </div>
+            <div class="input-box">
+                <input type="password" name="Password" id="password" placeholder="Enter password" required>
+            </div>
+            <div class="input-box">
+                <input type="password" name="ConfirmPassword" id="confirmPassword" placeholder="Confirm password" required>
+            </div>
+            <div class="policy">
+                <input type="checkbox" name="terms" required>
+                <h3>I accept all terms & condition</h3>
+            </div>
+            <div class="input-box button">
+                <input type="Submit" name="submit" value="Register Now">
+            </div>
+            <div id="errorMessages" style="color: red; margin-top: 10px;"></div>
+            <div class="text">
+                <h3>Already have an account? <a asp-action="Index">Login now</a></h3>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("registrationForm").addEventListener("submit", function (event) {
+                var errorMessages = "";
+
+                document.getElementById("errorMessages").textContent = "";
+
+                var fullName = document.getElementById("fullName").value;
+                if (fullName.trim() === "") {
+                    errorMessages += "Full Name is required.<br>";
+                    event.preventDefault();
+                }
+
+                var email = document.getElementById("email").value;
+                if (email.trim() === "") {
+                    errorMessages += "Email is required.<br>";
+                    event.preventDefault();
+                }
+
+                var username = document.getElementById("username").value;
+                if (username.trim() === "") {
+                    errorMessages += "Username is required.<br>";
+                    event.preventDefault();
+                }
+
+                var password = document.getElementById("password").value;
+                if (password.trim() === "") {
+                    errorMessages += "Password is required.<br>";
+                    event.preventDefault();
+                } else if (password.length < 8) {
+                    errorMessages += "Password must be at least 8 characters.<br>";
+                    event.preventDefault();
+                }
+
+                var confirmPassword = document.getElementById("confirmPassword").value;
+                if (confirmPassword.trim() === "") {
+                    errorMessages += "Confirm Password is required.<br>";
+                    event.preventDefault();
+                } else if (confirmPassword !== password) {
+                    errorMessages += "Passwords do not match.<br>";
+                    event.preventDefault();
+                }
+
+                document.getElementById("errorMessages").innerHTML = errorMessages;
+            });
+        });
+    </script>
+</body>
+</html>
